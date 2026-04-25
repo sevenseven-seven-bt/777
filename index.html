@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Random Video Game</title>
+    <style>
+        @font-face {
+            font-family: 'FCHype';
+            src: url('FC Hype [Non-commercial use] Bold ver 1.01.ttf') format('truetype');
+        }
+
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background: #000;
+            font-family: sans-serif;
+        }
+
+        .video-box {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #000;
+        }
+
+        /* wrapper ต้องพอดีกับวิดีโอจริงๆ ปุ่มถึงจะตาม */
+        .video-wrapper {
+            position: relative;
+            aspect-ratio: 1179 / 2556;
+            height: 100dvh;
+            max-width: 100dvw;
+            max-height: calc(100dvw * 2556 / 1179);
+        }
+
+        video {
+            width: 100%;
+            height: 100%;
+            display: block;
+            object-fit: contain;
+            background: #000;
+        }
+
+        #clickButton {
+            position: absolute !important;
+            top: 21.75% !important;
+            left: 52% !important;
+            transform: translate(-50%, -50%) !important;
+            width: 99.55% !important;
+            height: auto !important;
+            z-index: 999 !important;
+            cursor: pointer !important;
+            transition: opacity 0.3s ease, filter 0.3s ease, transform 0.3s ease !important;
+        }
+
+        #redrawButton {
+            position: absolute !important;
+            bottom: 15.5% !important;
+            left: 50% !important;
+            transform: translateX(-50%) !important;
+            width: 45% !important;
+            height: auto !important;
+            z-index: 999 !important;
+            cursor: pointer !important;
+            opacity: 0 !important;
+            transition: opacity 0.5s ease 1.5s, transform 0.3s ease !important;
+        }
+
+        #redrawButton.show {
+            opacity: 1 !important;
+        }
+
+        .score-box {
+            position: absolute;
+            top: 4%;
+            right: 2%;
+            width: 30%;
+            cursor: pointer;
+            z-index: 1001;
+            transition: transform 0.15s ease, filter 0.15s ease, opacity 0.3s ease;
+        }
+
+        .score-box.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .score-box:hover {
+            transform: scale(1.1);
+            filter: drop-shadow(0 0 5px #fffdf4);
+        }
+
+        .score-box img {
+            width: 100%;
+            display: block;
+        }
+
+        .score-num {
+            position: absolute;
+            top: 50%;
+            left: 58%;
+            transform: translate(-50%, -50%);
+            font-family: 'FCHype', sans-serif;
+            font-size: clamp(12px, 1.5vw, 24px);
+            color: #40325d;
+            text-shadow: 0px 0.5px 0.5px #000;
+            pointer-events: none;
+            white-space: nowrap;
+        }
+
+        .score-panel {
+            position: absolute;
+            top: calc(4% + 5% + 2%);
+            right: 4%;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 8px;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.25s ease;
+            z-index: 1000;
+        }
+
+        .score-panel.visible {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .score-btn {
+            width: 10%;
+            cursor: pointer;
+            display: block;
+            transition: transform 0.15s ease, filter 0.15s ease;
+        }
+
+        .score-btn-reset {
+            width: 15%;
+            cursor: pointer;
+            display: block;
+            margin-top: 5px;
+            transition: transform 0.15s ease, filter 0.15s ease;
+        }
+
+        .score-btn:hover,
+        .score-btn-reset:hover {
+            transform: scale(1.1);
+            filter: drop-shadow(0 0 5px #ffd700);
+        }
+
+        .score-btn:active,
+        .score-btn-reset:active {
+            transform: scale(0.93);
+        }
+
+        #clickButton:hover {
+            filter: drop-shadow(0 0 5px #ffd700) drop-shadow(0 0 10px #fff) !important;
+            transform: translate(-50%, -50%) scale(1.05) !important;
+        }
+
+        #redrawButton:hover {
+            filter: drop-shadow(0 0 5px #ffd700) drop-shadow(0 0 10px #fff) !important;
+            transform: translateX(-50%) scale(1.05) !important;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="video-box">
+        <div class="video-wrapper">
+            <video id="myVideo" playsinline muted>
+                <source src="AE_basic.mp4" type="video/mp4">
+            </video>
+
+            <div class="score-box" id="scoreBox" onclick="togglePanel()">
+                <img src="count_combo.png" alt="score">
+                <span class="score-num" id="scoreDisplay">0</span>
+            </div>
+
+            <div class="score-panel" id="scorePanel">
+                <img class="score-btn" src="count_add2.png" alt="+2" onclick="addScore(2)">
+                <img class="score-btn" src="count_add3.png" alt="+3" onclick="addScore(3)">
+                <img class="score-btn-reset" src="count_reset.png" alt="reset" onclick="resetScore()">
+            </div>
+
+            <img id="clickButton" src="click_button.png" onclick="handleClick()" alt="Click to Random Video">
+            <img id="redrawButton" src="redraw_button.png" onclick="handleRedraw()" alt="Random video again">
+        </div>
+    </div>
+
+    <script>
+        const randomList = ['AE_slot_01.mp4', 'AE_slot_02.mp4', 'AE_slot_03.mp4'];
+        const video = document.getElementById('myVideo');
+        const clickButton = document.getElementById('clickButton');
+        const redrawButton = document.getElementById('redrawButton');
+        const scoreDisplay = document.getElementById('scoreDisplay');
+        const scorePanel = document.getElementById('scorePanel');
+        const scoreBox = document.getElementById('scoreBox');
+        let isPlayingBasic = true;
+        let autoReturnTimeout = null;
+        let panelTimeout = null;
+        let score = 0;
+
+        function showCombo() { scoreBox.classList.remove('hidden'); }
+        function hideCombo() { scoreBox.classList.add('hidden'); closePanel(); }
+
+        function togglePanel() {
+            scorePanel.classList.add('visible');
+            resetPanelTimer();
+        }
+
+        function resetPanelTimer() {
+            if (panelTimeout) clearTimeout(panelTimeout);
+            panelTimeout = setTimeout(() => {
+                scorePanel.classList.remove('visible');
+            }, 3000);
+        }
+
+        function closePanel() {
+            if (panelTimeout) clearTimeout(panelTimeout);
+            scorePanel.classList.remove('visible');
+        }
+
+        function addScore(val) {
+            score += val;
+            scoreDisplay.textContent = score;
+            closePanel();
+        }
+
+        function resetScore() {
+            score = 0;
+            scoreDisplay.textContent = score;
+            closePanel();
+        }
+
+        function clearAutoReturn() {
+            if (autoReturnTimeout) {
+                clearTimeout(autoReturnTimeout);
+                autoReturnTimeout = null;
+            }
+        }
+
+        function scheduleAutoReturn() {
+            clearAutoReturn();
+            autoReturnTimeout = setTimeout(() => {
+                if (!isPlayingBasic) playBasic();
+            }, 2500);
+        }
+
+        function setButtonState() {
+            if (isPlayingBasic) {
+                clickButton.style.display = 'block';
+                clickButton.style.opacity = '1';
+                redrawButton.style.display = 'none';
+                redrawButton.classList.remove('show');
+                showCombo();
+            } else {
+                clickButton.style.display = 'none';
+                clickButton.style.opacity = '0';
+                redrawButton.style.display = 'block';
+                setTimeout(() => redrawButton.classList.add('show'), 100);
+            }
+        }
+
+        function playBasic() {
+            clearAutoReturn();
+            isPlayingBasic = true;
+            video.src = 'AE_basic.mp4';
+            video.loop = true;
+            video.load();
+            video.play().catch(e => console.log('playBasic error:', e));
+            setButtonState();
+        }
+
+        function playRandom() {
+            clearAutoReturn();
+            hideCombo();
+            isPlayingBasic = false;
+
+            const randomIndex = Math.floor(Math.random() * randomList.length);
+            video.src = randomList[randomIndex];
+            video.loop = false;
+            video.load();
+            video.play().catch(e => console.log('playRandom error:', e));
+
+            clickButton.style.display = 'none';
+            clickButton.style.opacity = '0';
+            redrawButton.style.display = 'none';
+            redrawButton.style.opacity = '0';
+            redrawButton.classList.remove('show');
+        }
+
+        function handleClick() {
+            if (isPlayingBasic) playRandom();
+            else playBasic();
+        }
+
+        function handleRedraw() {
+            redrawButton.style.opacity = '0';
+            redrawButton.classList.remove('show');
+            setTimeout(() => {
+                redrawButton.style.display = 'none';
+                playRandom();
+            }, 300);
+        }
+
+        function handleVideoEnd() {
+            if (isPlayingBasic) {
+                setButtonState();
+            } else {
+                setTimeout(() => {
+                    redrawButton.style.display = 'block';
+                    setTimeout(() => redrawButton.classList.add('show'), 100);
+                }, 500);
+                scheduleAutoReturn();
+            }
+        }
+
+        video.addEventListener('ended', handleVideoEnd);
+        video.addEventListener('loadedmetadata', setButtonState);
+
+        video.loop = true;
+        video.load();
+        video.play().catch(e => console.log('init error:', e));
+        setButtonState();
+    </script>
+
+</body>
+</html>
