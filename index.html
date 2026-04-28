@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ทำไมโลกนี้มีแต่เลข7</title>
+    <style>
+        @font-face {
+            font-family: 'FCHype';
+            src: url('FC Hype [Non-commercial use] Bold ver 1.01.ttf') format('truetype');
+        }
+
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background: #000;
+            font-family: sans-serif;
+        }
+
+        .page {
+            position: absolute;
+            inset: 0;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            background: #000;
+        }
+
+        .page.visible { display: flex; }
+
+        .page-wrapper {
+            position: relative;
+            height: 100dvh;
+            aspect-ratio: 1505 / 2556;
+            max-width: 100dvw;
+            max-height: calc(100dvw * 2556 / 1505);
+        }
+
+        .page-wrapper video,
+        .page-wrapper img.bg {
+            width: 100%;
+            height: 100%;
+            display: block;
+            object-fit: contain;
+            background: #000;
+        }
+
+        .back-btn {
+            position: absolute;
+            top: 3%;
+            left: 5%;
+            width: 15%;
+            cursor: pointer;
+            z-index: 100;
+            transition: transform 0.15s ease, filter 0.15s ease;
+        }
+
+        .back-btn:hover { transform: scale(1.05); filter: drop-shadow(0 0 5px #ffd700); }
+        .back-btn:active { transform: scale(0.95); }
+
+        #mainPage { z-index: 10; }
+
+        .video-wrapper {
+            position: relative;
+            aspect-ratio: 1505 / 2556;
+            height: 100dvh;
+            max-width: 100dvw;
+            max-height: calc(100dvw * 2556 / 1505);
+        }
+
+        #mainVideo {
+            width: 100%;
+            height: 100%;
+            display: block;
+            object-fit: contain;
+            background: #000;
+        }
+
+        #clickButton {
+            position: absolute !important;
+            top: 21.75% !important;
+            left: 51.75% !important;
+            transform: translate(-50%, -50%) !important;
+            width: 68.5% !important;
+            height: auto !important;
+            z-index: 999 !important;
+            cursor: pointer !important;
+            transition: opacity 0.3s ease, filter 0.3s ease, transform 0.3s ease !important;
+        }
+
+        #redrawButton {
+            position: absolute !important;
+            bottom: 15.5% !important;
+            left: 50% !important;
+            transform: translateX(-50%) !important;
+            width: 37% !important;
+            height: auto !important;
+            z-index: 999 !important;
+            cursor: pointer !important;
+            opacity: 0 !important;
+            transition: opacity 0.5s ease 1.5s, transform 0.3s ease !important;
+        }
+
+        #redrawButton.show { opacity: 1 !important; }
+
+        #bookletButton {
+            position: absolute;
+            bottom: 7%;
+            right: 5%;
+            width: 25%;
+            cursor: pointer;
+            z-index: 1000;
+            transition: opacity 0.3s ease, transform 0.15s ease, filter 0.15s ease;
+        }
+
+        #bookletButton:hover { transform: scale(1.05); filter: drop-shadow(0 0 8px #ffd700); }
+        #bookletButton:active { transform: scale(0.95); }
+
+        #bookletText {
+            position: absolute;
+            bottom: 4%;
+            right: 5%;
+            width: 25%;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        #howtoplayButton {
+            position: absolute;
+            bottom: 2%;
+            left: 5%;
+            width: 30%;
+            cursor: pointer;
+            z-index: 1000;
+            transition: opacity 0.3s ease, transform 0.15s ease, filter 0.15s ease;
+        }
+
+        #howtoplayButton:hover { transform: scale(1.05); filter: drop-shadow(0 0 8px #ffd700); }
+        #howtoplayButton:active { transform: scale(0.95); }
+
+        #clickButton:hover {
+            filter: drop-shadow(0 0 5px #ffd700) drop-shadow(0 0 10px #fff) !important;
+            transform: translate(-50%, -50%) scale(1.05) !important;
+        }
+
+        #redrawButton:hover {
+            filter: drop-shadow(0 0 5px #ffd700) drop-shadow(0 0 10px #fff) !important;
+            transform: translateX(-50%) scale(1.05) !important;
+        }
+
+        #categoryPage { z-index: 20; }
+
+        @keyframes float1 { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-6px); } }
+        @keyframes float2 { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-6px); } }
+        @keyframes float3 { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-6px); } }
+        @keyframes float4 { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-6px); } }
+        @keyframes float5 { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-6px); } }
+
+        .cat-btn {
+            position: absolute;
+            cursor: pointer;
+            z-index: 50;
+            transition: filter 0.15s ease;
+        }
+
+        #btn-red    { width: 28%; top: 30%; left: 25%; animation: float1 3s ease-in-out infinite; }
+        #btn-orange { width: 28%; top: 30%; left: 51%; animation: float2 3s ease-in-out infinite 0.2s; }
+        #btn-yellow { width: 28%; top: 52%; left: 13%; animation: float3 3s ease-in-out infinite 0.3s; }
+        #btn-green  { width: 26%; top: 50%; left: 38%; animation: float4 3s ease-in-out infinite 0.1s; }
+        #btn-blue   { width: 28%; top: 52%; left: 61%; animation: float5 3s ease-in-out infinite 0.4s; }
+
+        .cat-btn:hover { filter: drop-shadow(0 0 15px rgba(255,255,255,0.6)); animation-play-state: paused; }
+        .cat-btn:active { filter: brightness(0.85); }
+
+        /* ===== Color category pages ===== */
+        .color-page { z-index: 30; }
+
+        .color-page-wrapper {
+            position: relative;
+            height: 100dvh;
+            aspect-ratio: 1505 / 2556;
+            max-width: 100dvw;
+            max-height: calc(100dvw * 2556 / 1505);
+            overflow: hidden;
+        }
+
+        .color-page-wrapper img.bg {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            background: #000;
+        }
+
+        .btn-scroll-area {
+            position: absolute;
+            top: 9%;           /* ขึ้นจาก 16% → 13% */
+            left: 4%;
+            right: 4%;
+            bottom: 0;
+            overflow-y: auto;
+            overflow-x: hidden;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+            -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 2%, black 93%, transparent 100%);
+            mask-image: linear-gradient(to bottom, transparent 0%, black 2%, black 98%, transparent 100%);
+        }
+
+        .btn-scroll-area::-webkit-scrollbar { display: none; }
+
+        /* grid 3 คอลัมน์ ชิดกันขึ้น */
+        .btn-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 28%);justify-content: center;
+            gap: 2% 0.5%;          
+            padding-top: 7%;
+            padding-bottom: 20%; /* เพิ่ม padding ล่างให้ scroll เห็นปุ่มสุดท้ายก่อน fade */
+        }
+
+        .card-btn {
+            width: 100%;
+            aspect-ratio: 3 / 4;
+            cursor: pointer;
+            border-radius: 6%;
+            object-fit: contain;
+            transition: transform 0.15s ease, filter 0.15s ease;
+        }
+
+        .card-btn:hover {
+            transform: scale(1.05);
+            filter: drop-shadow(0 0 3px rgb(255, 255, 255));
+        }
+
+        .card-btn:active { transform: scale(0.95); }
+
+        /* ===== Info pages ===== */
+        .info-page { z-index: 40; }
+
+        .info-page-wrapper {
+            position: relative;
+            height: 100dvh;
+            aspect-ratio: 1505 / 2556;
+            max-width: 100dvw;
+            max-height: calc(100dvw * 2556 / 1505);
+            overflow: hidden;
+        }
+
+        .info-scroll-area {
+            position: absolute;
+            inset: 0;
+            overflow-y: auto;
+            overflow-x: hidden;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+        }
+
+        .info-scroll-area::-webkit-scrollbar { display: none; }
+
+        .info-scroll-area img.info-img {
+            width: 100%;
+            display: block;
+        }
+
+        .info-back-btn {
+            position: absolute;
+            top: 3%;
+            left: 5%;
+            width: 15%;
+            cursor: pointer;
+            z-index: 200;
+            transition: transform 0.15s ease, filter 0.15s ease;
+        }
+
+        .info-back-btn:hover { transform: scale(1.05); filter: drop-shadow(0 0 5px #ffd700); }
+        .info-back-btn:active { transform: scale(0.95); }
+
+        #howtoplayPage { z-index: 50; }
+
+        /* Score UI */
+        #globalScore {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 9999;
+        }
+
+        #globalScore .score-anchor {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            height: 100dvh;
+            aspect-ratio: 1505 / 2556;
+            max-width: 100dvw;
+            max-height: calc(100dvw * 2556 / 1505);
+            pointer-events: none;
+        }
+
+        .score-box {
+            position: absolute;
+            top: 2%; right: 2%;
+            width: 28%;
+            cursor: pointer;
+            pointer-events: auto;
+            transition: transform 0.15s ease, filter 0.15s ease, opacity 0.3s ease;
+        }
+
+        .score-box.hidden { opacity: 0; pointer-events: none; }
+        .score-box:hover { transform: scale(1.1); filter: drop-shadow(0 0 5px #fffdf4); }
+        .score-box img { width: 100%; display: block; }
+
+        .score-num {
+            position: absolute;
+            top: 50%; left: 58%;
+            transform: translate(-50%, -50%);
+            font-family: 'FCHype', sans-serif;
+            font-size: clamp(12px, 1.5vw, 24px);
+            color: #40325d;
+            text-shadow: 0px 0.5px 0.5px #000;
+            pointer-events: none;
+            white-space: nowrap;
+        }
+
+        .score-panel {
+            position: absolute;
+            top: calc(3% + 4% + 4%);
+            right: 4%;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 13px;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.25s ease;
+        }
+
+        .score-panel.visible { opacity: 1; pointer-events: auto; }
+
+        .score-btn {
+            width: 9%;
+            cursor: pointer;
+            display: block;
+            transition: transform 0.15s ease, filter 0.15s ease;
+        }
+
+        .score-btn-reset {
+            width: 14%;
+            cursor: pointer;
+            display: block;
+            margin-top: 3px;
+            transition: transform 0.15s ease, filter 0.15s ease;
+        }
+
+        .score-btn:hover, .score-btn-reset:hover { transform: scale(1.1); filter: drop-shadow(0 0 5px #ffd700); }
+        .score-btn:active, .score-btn-reset:active { transform: scale(0.93); }
+    </style>
+</head>
+<body>
+
+    <!-- Score UI -->
+    <div id="globalScore">
+        <div class="score-anchor">
+            <div class="score-box" id="scoreBox" onclick="togglePanel()">
+                <img src="count_combo.png" alt="score">
+                <span class="score-num" id="scoreDisplay">0</span>
+            </div>
+            <div class="score-panel" id="scorePanel">
+                <img class="score-btn" src="count_add2.png" alt="+2" onclick="addScore(2)">
+                <img class="score-btn" src="count_add3.png" alt="+3" onclick="addScore(3)">
+                <img class="score-btn-reset" src="count_reset.png" alt="reset" onclick="resetScore()">
+            </div>
+        </div>
+    </div>
+
+    <!-- หน้าหลัก -->
+    <div id="mainPage" class="page visible">
+        <div class="video-wrapper">
+            <video id="mainVideo" playsinline>
+                <source src="AE_basic.mp4" type="video/mp4">
+            </video>
+            <img id="clickButton" src="click_button.png" onclick="handleClick()" alt="Click">
+            <img id="redrawButton" src="redraw_button.png" onclick="handleRedraw()" alt="Redraw">
+            <img id="bookletButton" src="booklet_button.png" onclick="openPage('categoryPage')" alt="Booklet">
+            <img id="bookletText" src="booklet_text.png" alt="Booklet Text">
+            <img id="howtoplayButton" src="howtoplay_button.png" onclick="openPage('howtoplayPage')" alt="How to Play">
+        </div>
+    </div>
+
+    <!-- หน้า category -->
+    <div id="categoryPage" class="page">
+        <div class="page-wrapper">
+            <video id="categoryVideo" playsinline loop>
+                <source src="AE_category.mp4" type="video/mp4">
+            </video>
+            <img class="back-btn" src="back_button.png" onclick="closePage('categoryPage', 'mainPage')" alt="Back">
+            <img id="btn-red"    class="cat-btn" src="category_red_button.png"    onclick="openPage('redPage')"    alt="Red">
+            <img id="btn-orange" class="cat-btn" src="category_orange_button.png" onclick="openPage('orangePage')" alt="Orange">
+            <img id="btn-yellow" class="cat-btn" src="category_yellow_button.png" onclick="openPage('yellowPage')" alt="Yellow">
+            <img id="btn-green"  class="cat-btn" src="category_green_button.png"  onclick="openPage('greenPage')"  alt="Green">
+            <img id="btn-blue"   class="cat-btn" src="category_blue_button.png"   onclick="openPage('bluePage')"   alt="Blue">
+        </div>
+    </div>
+
+    <!-- หน้า red (15 ปุ่ม) -->
+    <div id="redPage" class="page color-page">
+        <div class="color-page-wrapper">
+            <img class="bg" src="category_red_bg.png" alt="Red">
+            <img class="back-btn" src="back_button.png" onclick="closePage('redPage', 'categoryPage')" alt="Back">
+            <div class="btn-scroll-area">
+                <div class="btn-grid" id="redGrid"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- หน้า orange (12 ปุ่ม) -->
+    <div id="orangePage" class="page color-page">
+        <div class="color-page-wrapper">
+            <img class="bg" src="category_orange_bg.png" alt="Orange">
+            <img class="back-btn" src="back_button.png" onclick="closePage('orangePage', 'categoryPage')" alt="Back">
+            <div class="btn-scroll-area">
+                <div class="btn-grid" id="orangeGrid"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- หน้า yellow (8 ปุ่ม) -->
+    <div id="yellowPage" class="page color-page">
+        <div class="color-page-wrapper">
+            <img class="bg" src="category_yellow_bg.png" alt="Yellow">
+            <img class="back-btn" src="back_button.png" onclick="closePage('yellowPage', 'categoryPage')" alt="Back">
+            <div class="btn-scroll-area">
+                <div class="btn-grid" id="yellowGrid"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- หน้า green (10 ปุ่ม) -->
+    <div id="greenPage" class="page color-page">
+        <div class="color-page-wrapper">
+            <img class="bg" src="category_green_bg.png" alt="Green">
+            <img class="back-btn" src="back_button.png" onclick="closePage('greenPage', 'categoryPage')" alt="Back">
+            <div class="btn-scroll-area">
+                <div class="btn-grid" id="greenGrid"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- หน้า blue (10 ปุ่ม) -->
+    <div id="bluePage" class="page color-page">
+        <div class="color-page-wrapper">
+            <img class="bg" src="category_blue_bg.png" alt="Blue">
+            <img class="back-btn" src="back_button.png" onclick="closePage('bluePage', 'categoryPage')" alt="Back">
+            <div class="btn-scroll-area">
+                <div class="btn-grid" id="blueGrid"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- หน้า howtoplay -->
+    <div id="howtoplayPage" class="page">
+        <div class="page-wrapper">
+            <img class="bg" src="howtoplay_info.png" alt="How to Play">
+            <img class="back-btn" src="back_button.png" onclick="closePage('howtoplayPage', 'mainPage')" alt="Back">
+        </div>
+    </div>
+
+    <script>
+        const colorConfig = {
+            red:    15,
+            orange: 12,
+            yellow: 8,
+            green:  10,
+            blue:   10,
+        };
+
+        Object.entries(colorConfig).forEach(([color, count]) => {
+            const grid = document.getElementById(`${color}Grid`);
+
+            for (let i = 1; i <= count; i++) {
+                const num = String(i).padStart(2, '0');
+                const infoPageId = `${color}_info_${num}`;
+
+                const btn = document.createElement('img');
+                btn.src = `${color}_button_${num}.png`;
+                btn.alt = `${color} ${num}`;
+                btn.className = 'card-btn';
+                btn.onclick = () => openPage(infoPageId);
+                grid.appendChild(btn);
+
+                const infoPage = document.createElement('div');
+                infoPage.id = infoPageId;
+                infoPage.className = 'page info-page';
+                infoPage.innerHTML = `
+                    <div class="info-page-wrapper">
+                        <img class="info-back-btn" src="back_button.png"
+                             onclick="closePage('${infoPageId}', '${color}Page')" alt="Back">
+                        <div class="info-scroll-area">
+                            <img class="info-img" src="${color}_info_${num}.png" alt="${color} info ${num}">
+                        </div>
+                    </div>
+                `;
+                document.body.appendChild(infoPage);
+            }
+        });
+
+        const randomList = ['AE_slot_01.mp4','AE_slot_02.mp4','AE_slot_03.mp4','AE_slot_04.mp4','AE_slot_05.mp4','AE_slot_06.mp4','AE_slot_07.mp4'];
+        const video = document.getElementById('mainVideo');
+        const categoryVideo = document.getElementById('categoryVideo');
+        const clickButton = document.getElementById('clickButton');
+        const redrawButton = document.getElementById('redrawButton');
+        const bookletButton = document.getElementById('bookletButton');
+        const bookletText = document.getElementById('bookletText');
+        const howtoplayButton = document.getElementById('howtoplayButton');
+        const scoreDisplay = document.getElementById('scoreDisplay');
+        const scorePanel = document.getElementById('scorePanel');
+        const scoreBox = document.getElementById('scoreBox');
+        let isPlayingBasic = true;
+        let autoReturnTimeout = null;
+        let panelTimeout = null;
+        let score = 0;
+
+        function showMainButtons() {
+            bookletButton.style.opacity = '1';
+            bookletButton.style.pointerEvents = 'auto';
+            bookletText.style.opacity = '1';
+            howtoplayButton.style.opacity = '1';
+            howtoplayButton.style.pointerEvents = 'auto';
+        }
+
+        function hideMainButtons() {
+            bookletButton.style.opacity = '0';
+            bookletButton.style.pointerEvents = 'none';
+            bookletText.style.opacity = '0';
+            howtoplayButton.style.opacity = '0';
+            howtoplayButton.style.pointerEvents = 'none';
+        }
+
+        function openPage(pageId) {
+            document.getElementById(pageId).classList.add('visible');
+            if (pageId === 'categoryPage') {
+                video.pause();
+                categoryVideo.currentTime = 0;
+                categoryVideo.play().catch(() => {});
+            }
+            if (pageId === 'howtoplayPage') video.pause();
+        }
+
+        function closePage(pageId, returnTo) {
+            const el = document.getElementById(pageId);
+            if (el) el.classList.remove('visible');
+
+            const scrollArea = el && el.querySelector('.info-scroll-area, .btn-scroll-area');
+            if (scrollArea) scrollArea.scrollTop = 0;
+
+            if (pageId === 'categoryPage') {
+                categoryVideo.pause();
+                video.play().catch(() => {});
+            }
+            if (pageId === 'howtoplayPage') video.play().catch(() => {});
+            if (returnTo === 'categoryPage') categoryVideo.play().catch(() => {});
+        }
+
+        function showCombo() { scoreBox.classList.remove('hidden'); }
+        function hideCombo() { scoreBox.classList.add('hidden'); closePanel(); }
+
+        function togglePanel() {
+            scorePanel.classList.add('visible');
+            resetPanelTimer();
+        }
+
+        function resetPanelTimer() {
+            if (panelTimeout) clearTimeout(panelTimeout);
+            panelTimeout = setTimeout(() => scorePanel.classList.remove('visible'), 3000);
+        }
+
+        function closePanel() {
+            if (panelTimeout) clearTimeout(panelTimeout);
+            scorePanel.classList.remove('visible');
+        }
+
+        function addScore(val) { score += val; scoreDisplay.textContent = score; closePanel(); }
+        function resetScore() { score = 0; scoreDisplay.textContent = score; closePanel(); }
+
+        function clearAutoReturn() {
+            if (autoReturnTimeout) { clearTimeout(autoReturnTimeout); autoReturnTimeout = null; }
+        }
+
+        function scheduleAutoReturn() {
+            clearAutoReturn();
+            autoReturnTimeout = setTimeout(() => { if (!isPlayingBasic) playBasic(); }, 2500);
+        }
+
+        function setButtonState() {
+            if (isPlayingBasic) {
+                clickButton.style.display = 'block';
+                clickButton.style.opacity = '1';
+                redrawButton.style.display = 'none';
+                redrawButton.classList.remove('show');
+                showCombo();
+                showMainButtons();
+            } else {
+                clickButton.style.display = 'none';
+                clickButton.style.opacity = '0';
+                redrawButton.style.display = 'block';
+                setTimeout(() => redrawButton.classList.add('show'), 100);
+            }
+        }
+
+        function playBasic() {
+            clearAutoReturn();
+            isPlayingBasic = true;
+            video.src = 'AE_basic.mp4';
+            video.loop = true;
+            video.load();
+            video.play().catch(() => {});
+            setButtonState();
+        }
+
+        function playRandom() {
+            clearAutoReturn();
+            hideCombo();
+            hideMainButtons();
+            isPlayingBasic = false;
+            const randomIndex = Math.floor(Math.random() * randomList.length);
+            video.src = randomList[randomIndex];
+            video.loop = false;
+            video.load();
+            video.play().catch(() => {});
+            clickButton.style.display = 'none';
+            clickButton.style.opacity = '0';
+            redrawButton.style.display = 'none';
+            redrawButton.style.opacity = '0';
+            redrawButton.classList.remove('show');
+        }
+
+        function handleClick() { if (isPlayingBasic) playRandom(); else playBasic(); }
+
+        function handleRedraw() {
+            redrawButton.style.opacity = '0';
+            redrawButton.classList.remove('show');
+            setTimeout(() => { redrawButton.style.display = 'none'; playRandom(); }, 300);
+        }
+
+        function handleVideoEnd() {
+            if (isPlayingBasic) {
+                setButtonState();
+            } else {
+                setTimeout(() => {
+                    redrawButton.style.display = 'block';
+                    setTimeout(() => redrawButton.classList.add('show'), 100);
+                }, 500);
+                scheduleAutoReturn();
+            }
+        }
+
+        video.addEventListener('ended', handleVideoEnd);
+        video.addEventListener('loadedmetadata', setButtonState);
+
+        video.loop = true;
+        video.load();
+        video.play().catch(() => {});
+        setButtonState();
+    </script>
+
+</body>
+</html>
