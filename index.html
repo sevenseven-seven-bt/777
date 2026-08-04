@@ -4,10 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ทำไมโลกนี้มีแต่เลข7</title>
+    <!-- Preload เฉพาะสิ่งที่ต้องเห็นทันทีในหน้า splash เท่านั้น
+         ที่เหลือ (ปุ่ม, category, howtoplay, การ์ดต่างๆ) ให้บราวเซอร์โหลดตามลำดับปกติ
+         ตอน parse HTML หรือโหลด lazy ตอนผู้ใช้กดเข้าไปหน้านั้นจริงๆ -->
+    <link rel="preload" as="image" href="start_page.webp">
+    <link rel="preload" as="image" href="start_button.webp">
     <style>
         @font-face {
             font-family: 'FCHype';
-            src: url('FC Hype [Non-commercial use] Bold ver 1.01.ttf') format('truetype');
+            src: url('FC-Hype-Bold.woff2') format('woff2');
+            font-display: swap;
         }
 
         html, body {
@@ -140,6 +146,33 @@
 
         #howtoplayButton:hover { transform: scale(1.05); filter: drop-shadow(0 0 8px #ffd700); }
         #howtoplayButton:active { transform: scale(0.95); }
+
+        /* Splash screen */
+        #splashScreen {
+            position: absolute;
+            inset: 0;
+            z-index: 99999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        #splashScreen.hidden { display: none; }
+
+        #splashText {
+            color: #fff;
+            font-family: sans-serif;
+            font-size: clamp(18px, 5vw, 32px);
+            letter-spacing: 2px;
+            opacity: 0.85;
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.4; filter: drop-shadow(0 0 5px #ffd700); }
+            50% { opacity: 1; filter: drop-shadow(0 0 30px #ffd700) drop-shadow(0 0 60px #fff); }
+        }
 
         #clickButton:hover {
             filter: drop-shadow(0 0 5px #ffd700) drop-shadow(0 0 10px #fff) !important;
@@ -309,7 +342,7 @@
             transition: transform 0.15s ease, filter 0.15s ease, opacity 0.3s ease;
         }
 
-        .score-box.hidden { opacity: 0; pointer-events: none; }
+        .score-box.hidden { display: none; }
         .score-box:hover { transform: scale(1.1); filter: drop-shadow(0 0 5px #fffdf4); }
         .score-box img { width: 100%; display: block; }
 
@@ -362,16 +395,16 @@
 <body>
 
     <!-- Score UI -->
-    <div id="globalScore">
+    <div id="globalScore" style="display:none;">
         <div class="score-anchor">
-            <div class="score-box" id="scoreBox" onclick="togglePanel()">
-                <img src="count_combo.png" alt="score">
+            <div class="score-box hidden" id="scoreBox" onclick="togglePanel()">
+                <img src="count_combo.webp" alt="score">
                 <span class="score-num" id="scoreDisplay">0</span>
             </div>
             <div class="score-panel" id="scorePanel">
-                <img class="score-btn" src="count_add2.png" alt="+2" onclick="addScore(2)">
-                <img class="score-btn" src="count_add3.png" alt="+3" onclick="addScore(3)">
-                <img class="score-btn-reset" src="count_reset.png" alt="reset" onclick="resetScore()">
+                <img class="score-btn" src="count_add2.webp" alt="+2" onclick="addScore(2)">
+                <img class="score-btn" src="count_add3.webp" alt="+3" onclick="addScore(3)">
+                <img class="score-btn-reset" src="count_reset.webp" alt="reset" onclick="resetScore()">
             </div>
         </div>
     </div>
@@ -379,37 +412,43 @@
     <!-- หน้าหลัก -->
     <div id="mainPage" class="page visible">
         <div class="video-wrapper">
-            <video id="mainVideo" playsinline>
+            <video id="mainVideo" playsinline preload="auto">
                 <source src="AE_basic.mp4" type="video/mp4">
             </video>
-            <img id="clickButton" src="click_button.png" onclick="handleClick()" alt="Click">
-            <img id="redrawButton" src="redraw_button.png" onclick="handleRedraw()" alt="Redraw">
-            <img id="bookletButton" src="booklet_button.png" onclick="openPage('categoryPage')" alt="Booklet">
-            <img id="bookletText" src="booklet_text.png" alt="Booklet Text">
-            <img id="howtoplayButton" src="howtoplay_button.png" onclick="openPage('howtoplayPage')" alt="How to Play">
+
+            <!-- Splash screen อยู่ใน wrapper → ขนาดตามวิดีโอเลย -->
+            <div id="splashScreen" onclick="startApp()">
+                <img src="start_page.webp" alt="start page" style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain;">
+                <img src="start_button.webp" alt="start" style="position: absolute; bottom: 18%; left: 50%; transform: translateX(-50%); width: 40%; animation: pulse 1.7s ease-in-out infinite;">
+            </div>
+            <img id="clickButton" src="click_button.webp" onclick="handleClick()" alt="Click">
+            <img id="redrawButton" src="redraw_button.webp" onclick="handleRedraw()" alt="Redraw">
+            <img id="bookletButton" src="booklet_button.webp" onclick="openPage('categoryPage')" alt="Booklet">
+            <img id="bookletText" src="booklet_text.webp" alt="Booklet Text">
+            <img id="howtoplayButton" src="howtoplay_button.webp" onclick="openPage('howtoplayPage')" alt="How to Play">
         </div>
     </div>
 
     <!-- หน้า category -->
     <div id="categoryPage" class="page">
         <div class="page-wrapper">
-            <video id="categoryVideo" playsinline loop>
+            <video id="categoryVideo" playsinline loop preload="metadata">
                 <source src="AE_category.mp4" type="video/mp4">
             </video>
-            <img class="back-btn" src="back_button.png" onclick="closePage('categoryPage', 'mainPage')" alt="Back">
-            <img id="btn-red"    class="cat-btn" src="category_red_button.png"    onclick="openPage('redPage')"    alt="Red">
-            <img id="btn-orange" class="cat-btn" src="category_orange_button.png" onclick="openPage('orangePage')" alt="Orange">
-            <img id="btn-yellow" class="cat-btn" src="category_yellow_button.png" onclick="openPage('yellowPage')" alt="Yellow">
-            <img id="btn-green"  class="cat-btn" src="category_green_button.png"  onclick="openPage('greenPage')"  alt="Green">
-            <img id="btn-blue"   class="cat-btn" src="category_blue_button.png"   onclick="openPage('bluePage')"   alt="Blue">
+            <img class="back-btn" src="back_button.webp" onclick="closePage('categoryPage', 'mainPage')" alt="Back">
+            <img id="btn-red"    class="cat-btn" src="category_red_button.webp"    onclick="openPage('redPage')"    alt="Red">
+            <img id="btn-orange" class="cat-btn" src="category_orange_button.webp" onclick="openPage('orangePage')" alt="Orange">
+            <img id="btn-yellow" class="cat-btn" src="category_yellow_button.webp" onclick="openPage('yellowPage')" alt="Yellow">
+            <img id="btn-green"  class="cat-btn" src="category_green_button.webp"  onclick="openPage('greenPage')"  alt="Green">
+            <img id="btn-blue"   class="cat-btn" src="category_blue_button.webp"   onclick="openPage('bluePage')"   alt="Blue">
         </div>
     </div>
 
     <!-- หน้า red (15 ปุ่ม) -->
     <div id="redPage" class="page color-page">
         <div class="color-page-wrapper">
-            <img class="bg" src="category_red_bg.png" alt="Red">
-            <img class="back-btn" src="back_button.png" onclick="closePage('redPage', 'categoryPage')" alt="Back">
+            <img class="bg" src="category_red_bg.webp" alt="Red">
+            <img class="back-btn" src="back_button.webp" onclick="closePage('redPage', 'categoryPage')" alt="Back">
             <div class="btn-scroll-area">
                 <div class="btn-grid" id="redGrid"></div>
             </div>
@@ -419,8 +458,8 @@
     <!-- หน้า orange (12 ปุ่ม) -->
     <div id="orangePage" class="page color-page">
         <div class="color-page-wrapper">
-            <img class="bg" src="category_orange_bg.png" alt="Orange">
-            <img class="back-btn" src="back_button.png" onclick="closePage('orangePage', 'categoryPage')" alt="Back">
+            <img class="bg" src="category_orange_bg.webp" alt="Orange">
+            <img class="back-btn" src="back_button.webp" onclick="closePage('orangePage', 'categoryPage')" alt="Back">
             <div class="btn-scroll-area">
                 <div class="btn-grid" id="orangeGrid"></div>
             </div>
@@ -430,8 +469,8 @@
     <!-- หน้า yellow (8 ปุ่ม) -->
     <div id="yellowPage" class="page color-page">
         <div class="color-page-wrapper">
-            <img class="bg" src="category_yellow_bg.png" alt="Yellow">
-            <img class="back-btn" src="back_button.png" onclick="closePage('yellowPage', 'categoryPage')" alt="Back">
+            <img class="bg" src="category_yellow_bg.webp" alt="Yellow">
+            <img class="back-btn" src="back_button.webp" onclick="closePage('yellowPage', 'categoryPage')" alt="Back">
             <div class="btn-scroll-area">
                 <div class="btn-grid" id="yellowGrid"></div>
             </div>
@@ -441,8 +480,8 @@
     <!-- หน้า green (10 ปุ่ม) -->
     <div id="greenPage" class="page color-page">
         <div class="color-page-wrapper">
-            <img class="bg" src="category_green_bg.png" alt="Green">
-            <img class="back-btn" src="back_button.png" onclick="closePage('greenPage', 'categoryPage')" alt="Back">
+            <img class="bg" src="category_green_bg.webp" alt="Green">
+            <img class="back-btn" src="back_button.webp" onclick="closePage('greenPage', 'categoryPage')" alt="Back">
             <div class="btn-scroll-area">
                 <div class="btn-grid" id="greenGrid"></div>
             </div>
@@ -452,8 +491,8 @@
     <!-- หน้า blue (10 ปุ่ม) -->
     <div id="bluePage" class="page color-page">
         <div class="color-page-wrapper">
-            <img class="bg" src="category_blue_bg.png" alt="Blue">
-            <img class="back-btn" src="back_button.png" onclick="closePage('bluePage', 'categoryPage')" alt="Back">
+            <img class="bg" src="category_blue_bg.webp" alt="Blue">
+            <img class="back-btn" src="back_button.webp" onclick="closePage('bluePage', 'categoryPage')" alt="Back">
             <div class="btn-scroll-area">
                 <div class="btn-grid" id="blueGrid"></div>
             </div>
@@ -463,12 +502,36 @@
     <!-- หน้า howtoplay -->
     <div id="howtoplayPage" class="page">
         <div class="page-wrapper">
-            <img class="bg" src="howtoplay_info.png" alt="How to Play">
-            <img class="back-btn" src="back_button.png" onclick="closePage('howtoplayPage', 'mainPage')" alt="Back">
+            <video id="howtoplayVideo" playsinline preload="metadata" style="width:100%;height:100%;object-fit:contain;">
+                <source src="how-to-play.mp4" type="video/mp4">
+            </video>
+            <img class="back-btn" src="back_button.webp" onclick="closePage('howtoplayPage', 'mainPage')" alt="Back">
         </div>
     </div>
 
     <script>
+        // AudioContext — เสียงดังทันที ไม่ delay ไม่หาย
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const soundBuffers = {};
+
+        async function loadSound(name, url) {
+            const res = await fetch(url);
+            const buf = await res.arrayBuffer();
+            soundBuffers[name] = await audioCtx.decodeAudioData(buf);
+        }
+
+        function playSound(name) {
+            const buf = soundBuffers[name];
+            if (!buf) return;
+            const src = audioCtx.createBufferSource();
+            src.buffer = buf;
+            src.connect(audioCtx.destination);
+            src.start(0);
+        }
+
+        function playPop() { playSound('pop'); }
+        function playClick() { playSound('click'); }
+
         const colorConfig = {
             red:    15,
             orange: 12,
@@ -485,10 +548,10 @@
                 const infoPageId = `${color}_info_${num}`;
 
                 const btn = document.createElement('img');
-                btn.src = `${color}_button_${num}.png`;
+                btn.src = `${color}_button_${num}.webp`;
                 btn.alt = `${color} ${num}`;
                 btn.className = 'card-btn';
-                btn.onclick = () => openPage(infoPageId);
+                btn.onclick = () => { playPop(); openPage(infoPageId); };
                 grid.appendChild(btn);
 
                 const infoPage = document.createElement('div');
@@ -496,10 +559,10 @@
                 infoPage.className = 'page info-page';
                 infoPage.innerHTML = `
                     <div class="info-page-wrapper">
-                        <img class="info-back-btn" src="back_button.png"
+                        <img class="info-back-btn" src="back_button.webp"
                              onclick="closePage('${infoPageId}', '${color}Page')" alt="Back">
                         <div class="info-scroll-area">
-                            <img class="info-img" src="${color}_info_${num}.png" alt="${color} info ${num}">
+                            <img class="info-img" src="${color}_info_${num}.webp" alt="${color} info ${num}">
                         </div>
                     </div>
                 `;
@@ -514,7 +577,7 @@
         const redrawButton = document.getElementById('redrawButton');
         const bookletButton = document.getElementById('bookletButton');
         const bookletText = document.getElementById('bookletText');
-        const howtoplayButton = document.getElementById('howtoplayButton');
+        const howtoplayVideo = document.getElementById('howtoplayVideo');
         const scoreDisplay = document.getElementById('scoreDisplay');
         const scorePanel = document.getElementById('scorePanel');
         const scoreBox = document.getElementById('scoreBox');
@@ -540,16 +603,22 @@
         }
 
         function openPage(pageId) {
+            playPop();
             document.getElementById(pageId).classList.add('visible');
             if (pageId === 'categoryPage') {
                 video.pause();
                 categoryVideo.currentTime = 0;
                 categoryVideo.play().catch(() => {});
             }
-            if (pageId === 'howtoplayPage') video.pause();
+            if (pageId === 'howtoplayPage') {
+                video.pause();
+                howtoplayVideo.currentTime = 0;
+                howtoplayVideo.play().catch(() => {});
+            }
         }
 
         function closePage(pageId, returnTo) {
+            playPop();
             const el = document.getElementById(pageId);
             if (el) el.classList.remove('visible');
 
@@ -560,12 +629,16 @@
                 categoryVideo.pause();
                 video.play().catch(() => {});
             }
-            if (pageId === 'howtoplayPage') video.play().catch(() => {});
+            if (pageId === 'howtoplayPage') {
+                howtoplayVideo.pause();
+                howtoplayVideo.currentTime = 0;
+                video.play().catch(() => {});
+            }
             if (returnTo === 'categoryPage') categoryVideo.play().catch(() => {});
         }
 
-        function showCombo() { scoreBox.classList.remove('hidden'); }
-        function hideCombo() { scoreBox.classList.add('hidden'); closePanel(); }
+        function showCombo() { scoreBox.style.display = 'block'; }
+        function hideCombo() { scoreBox.style.display = 'none'; closePanel(); }
 
         function togglePanel() {
             scorePanel.classList.add('visible');
@@ -582,8 +655,8 @@
             scorePanel.classList.remove('visible');
         }
 
-        function addScore(val) { score += val; scoreDisplay.textContent = score; closePanel(); }
-        function resetScore() { score = 0; scoreDisplay.textContent = score; closePanel(); }
+        function addScore(val) { playPop(); score += val; scoreDisplay.textContent = score; closePanel(); }
+        function resetScore() { playPop(); score = 0; scoreDisplay.textContent = score; closePanel(); }
 
         function clearAutoReturn() {
             if (autoReturnTimeout) { clearTimeout(autoReturnTimeout); autoReturnTimeout = null; }
@@ -637,9 +710,10 @@
             redrawButton.classList.remove('show');
         }
 
-        function handleClick() { if (isPlayingBasic) playRandom(); else playBasic(); }
+        function handleClick() { playClick(); if (isPlayingBasic) playRandom(); else playBasic(); }
 
         function handleRedraw() {
+            playClick();
             redrawButton.style.opacity = '0';
             redrawButton.classList.remove('show');
             setTimeout(() => { redrawButton.style.display = 'none'; playRandom(); }, 300);
@@ -657,12 +731,61 @@
             }
         }
 
+        function startApp() {
+            document.getElementById('splashScreen').classList.add('hidden');
+            document.getElementById('globalScore').style.display = 'block';
+            scoreBox.style.display = 'none'; // ซ่อนก่อนจนกว่า setButtonState จะเรียก showCombo
+
+            // Resume AudioContext (iOS ต้องการ user gesture)
+            audioCtx.resume();
+
+            // โหลดเสียงทั้งหมด
+            loadSound('pop', 'Pop_sound.mp3');
+            loadSound('click', 'Click_sound.mp3');
+
+            // Preload วิดีโอ slot + รูป card แบบทยอยโหลดตอนเบราว์เซอร์ว่าง (idle)
+            // แทนที่จะยิงพร้อมกันหมดทีเดียว ซึ่งแย่งแบนด์วิดท์กับวิดีโอหลักที่กำลังเล่นอยู่
+            const lazyQueue = [];
+            randomList.forEach(src => {
+                lazyQueue.push(() => {
+                    const v = document.createElement('video');
+                    v.preload = 'auto';
+                    v.src = src;
+                });
+            });
+            Object.entries(colorConfig).forEach(([color, count]) => {
+                for (let i = 1; i <= count; i++) {
+                    const src = `${color}_info_${i}.webp`;
+                    lazyQueue.push(() => { const img = new Image(); img.src = src; });
+                }
+            });
+
+            function runLazyQueue() {
+                if (lazyQueue.length === 0) return;
+                const task = lazyQueue.shift();
+                task();
+                if ('requestIdleCallback' in window) {
+                    requestIdleCallback(runLazyQueue, { timeout: 1000 });
+                } else {
+                    setTimeout(runLazyQueue, 150);
+                }
+            }
+            if ('requestIdleCallback' in window) {
+                requestIdleCallback(runLazyQueue, { timeout: 1000 });
+            } else {
+                setTimeout(runLazyQueue, 300);
+            }
+
+            video.loop = true;
+            video.load();
+            video.play().catch(() => {});
+            setButtonState();
+        }
+
         video.addEventListener('ended', handleVideoEnd);
         video.addEventListener('loadedmetadata', setButtonState);
 
-        video.loop = true;
-        video.load();
-        video.play().catch(() => {});
+        // ไม่ autoplay ตอนเริ่ม รอ user tap ก่อน
         setButtonState();
     </script>
 
